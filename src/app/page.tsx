@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -29,7 +28,7 @@ type PhoneFormData = z.infer<typeof phoneSchema>;
 export default function LoginPage() {
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [sentOTP, setSentOTP] = useState("312994"); // Simulated OTP
-  const [enteredPhone, setEnteredPhone] = useState("");
+  const [, setEnteredPhone] = useState("");
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [otpError, setOtpError] = useState("");
   const [timer, setTimer] = useState(300); // 5 minutes
@@ -75,11 +74,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-lg text-center space-y-6">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-sm space-y-6 rounded-2xl bg-white p-6 text-center shadow-lg">
         {/* Logo and Title */}
-        <div className="flex justify-center items-center gap-2">
-          <div className="w-10 h-10">
+        <div className="flex items-center justify-center gap-2">
+          <div className="h-10 w-10">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="-0.5 -0.5 16 16"
@@ -105,9 +104,7 @@ export default function LoginPage() {
         {step === "phone" && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-black">Welcome</h2>
-            <p className="text-sm text-gray-500">
-              Sign in / Sign up with your phone number
-            </p>
+            <p className="text-sm text-gray-500">Sign in / Sign up with your phone number</p>
 
             <Form {...phoneForm}>
               <form
@@ -119,21 +116,19 @@ export default function LoginPage() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Phone Number
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Phone Number</FormLabel>
                       <FormControl>
-                        <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
+                        <div className="flex items-center rounded-lg border border-gray-300 px-3 py-2">
                           <span className="mr-2 text-sm font-semibold">IN</span>
                           <input
                             type="text"
                             placeholder="Enter your phone number"
-                            className="w-full border-none outline-none text-sm"
+                            className="w-full border-none text-sm outline-none"
                             {...field}
                           />
                         </div>
                       </FormControl>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="mt-1 text-xs text-gray-500">
                         Enter your 10-digit mobile number
                       </p>
                       <FormMessage />
@@ -142,18 +137,17 @@ export default function LoginPage() {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-emerald-200 hover:bg-emerald-300 text-emerald-900 font-semibold"
+                  className="w-full bg-emerald-200 font-semibold text-emerald-900 hover:bg-emerald-300"
                 >
-                  <Phone className="h-4 w-4 mr-2" />
+                  <Phone className="mr-2 h-4 w-4" />
                   Sign In
                 </Button>
               </form>
             </Form>
 
-            <p className="text-[11px] text-gray-400 text-center mt-4">
-              By continuing, you agree to our{" "}
-              <span className="underline">Terms of Service</span> and{" "}
-              <span className="underline">Privacy Policy</span>
+            <p className="mt-4 text-center text-[11px] text-gray-400">
+              By continuing, you agree to our <span className="underline">Terms of Service</span>{" "}
+              and <span className="underline">Privacy Policy</span>
             </p>
           </div>
         )}
@@ -162,18 +156,16 @@ export default function LoginPage() {
         {step === "otp" && (
           <div className="space-y-5">
             <h2 className="text-xl font-semibold text-black">Welcome</h2>
-            <p className="text-sm text-gray-500">
-              Enter the 6-digit code sent to your phone
-            </p>
+            <p className="text-sm text-gray-500">Enter the 6-digit code sent to your phone</p>
 
             {/* Verification message box */}
-            <div className="bg-blue-50 text-sm text-gray-700 border border-blue-200 rounded-md p-3 flex gap-2 items-start">
+            <div className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-gray-700">
               <div className="mt-0.5 text-blue-600">🛡️</div>
               <div>
                 <p className="font-semibold">Verification required</p>
                 <p>
-                  Enter the 6-digit code sent to your phone. If you don’t receive it
-                  within 30 seconds, you can request a new code.
+                  Enter the 6-digit code sent to your phone. If you don’t receive it within 30
+                  seconds, you can request a new code.
                 </p>
               </div>
             </div>
@@ -182,43 +174,40 @@ export default function LoginPage() {
             <div className="flex justify-center gap-2">
               {otp.map((digit, index) => (
                 <input
-                key={index}
-                ref={(el) => {
-                  if (el) inputRefs.current[index] = el;
-                }}
-                type="text"
-                inputMode="numeric"
-                title={`Digit ${index + 1}`}
-                aria-label={`Digit ${index + 1}`}
-                maxLength={1}
-                className="w-12 h-12 text-center text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                value={digit}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (!/^\d?$/.test(val)) return;
-                  const newOtp = [...otp];
-                  newOtp[index] = val;
-                  setOtp(newOtp);
-                  if (val && inputRefs.current[index + 1]) {
-                    inputRefs.current[index + 1]?.focus();
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Backspace" && !otp[index] && index > 0) {
-                    inputRefs.current[index - 1]?.focus();
-                  }
-                }}
-              />
-              
+                  key={index}
+                  ref={(el) => {
+                    if (el) inputRefs.current[index] = el;
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  title={`Digit ${index + 1}`}
+                  aria-label={`Digit ${index + 1}`}
+                  maxLength={1}
+                  className="h-12 w-12 rounded-lg border border-gray-300 text-center text-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  value={digit}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (!/^\d?$/.test(val)) return;
+                    const newOtp = [...otp];
+                    newOtp[index] = val;
+                    setOtp(newOtp);
+                    if (val && inputRefs.current[index + 1]) {
+                      inputRefs.current[index + 1]?.focus();
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Backspace" && !otp[index] && index > 0) {
+                      inputRefs.current[index - 1]?.focus();
+                    }
+                  }}
+                />
               ))}
             </div>
 
-            {otpError && (
-              <p className="text-sm text-red-500 text-center">{otpError}</p>
-            )}
+            {otpError && <p className="text-center text-sm text-red-500">{otpError}</p>}
 
             {/* Resend + Timer */}
-            <div className="text-sm text-gray-500 flex justify-between px-1">
+            <div className="flex justify-between px-1 text-sm text-gray-500">
               <span>
                 Didn’t receive code?{" "}
                 <button
@@ -236,7 +225,7 @@ export default function LoginPage() {
             </div>
 
             <Button
-              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm"
+              className="w-full bg-emerald-700 text-sm font-semibold text-white hover:bg-emerald-800"
               onClick={handleOTPSubmit}
             >
               🛡️ Verify
@@ -247,5 +236,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-
