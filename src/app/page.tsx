@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -5,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Shield } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -25,13 +27,13 @@ const phoneSchema = z.object({
 
 type PhoneFormData = z.infer<typeof phoneSchema>;
 
-export default function LoginPage() {
+const Index = () => {
   const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [sentOTP, setSentOTP] = useState("312994"); // Simulated OTP
+  const [sentOTP, setSentOTP] = useState("312994");
   const [, setEnteredPhone] = useState("");
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [otpError, setOtpError] = useState("");
-  const [timer, setTimer] = useState(300); // 5 minutes
+  const [timer, setTimer] = useState(300);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -52,7 +54,7 @@ export default function LoginPage() {
   const handlePhoneSubmit = (data: PhoneFormData) => {
     setEnteredPhone(data.phone);
     setStep("otp");
-    setTimer(300); // reset timer
+    setTimer(300);
     alert(`OTP sent to ${data.phone}: ${sentOTP}`);
   };
 
@@ -74,13 +76,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-sm space-y-6 rounded-2xl bg-white p-6 text-center shadow-lg">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+      <div className="w-full max-w-md bg-white rounded-lg p-6 text-center shadow-md">
         {/* Logo and Title */}
-        <div className="flex items-center justify-center gap-2">
-          <div className="h-10 w-10">
+        <div className="text-center">
+        <h1 className="text-3xl font-bold text-teal-800 " >TerraTip</h1>
+
+
+          {/* SVG Logo */}
+          <div className="mt-6 mb-8 flex justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              width="96"
+              height="96"
               viewBox="-0.5 -0.5 16 16"
               fill="none"
               stroke="#2e6e5e"
@@ -97,81 +105,92 @@ export default function LoginPage() {
               <path d="M10.94375 8.03125 4.0625 11.96875" strokeWidth="1" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-emerald-700">TerraTip</h1>
         </div>
 
         {/* Phone Step */}
         {step === "phone" && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-black">Welcome</h2>
-            <p className="text-sm text-gray-500">Sign in / Sign up with your phone number</p>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome</h2>
+              <p className= "text-gray-500">Sign in / Sign up with your phone number</p>
+            </div>
 
             <Form {...phoneForm}>
               <form
                 onSubmit={phoneForm.handleSubmit(handlePhoneSubmit)}
-                className="space-y-4 text-left"
+                className="space-y-6"
               >
                 <FormField
                   control={phoneForm.control}
                   name="phone"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">Phone Number</FormLabel>
+                    <FormItem className="text-left">
+                      <FormLabel className="block font-bold text-gray-600 ">Phone Number</FormLabel>
                       <FormControl>
-                        <div className="flex items-center rounded-lg border border-gray-300 px-3 py-2">
-                          <span className="mr-2 text-sm font-semibold">IN</span>
-                          <input
-                            type="text"
-                            placeholder="Enter your phone number"
-                            className="w-full border-none text-sm outline-none"
-                            {...field}
-                          />
+                        <div className="relative">
+                          <div className="flex items-center border text- border-gray-300 rounded-sm px-4 py-2 focus-within:ring-2 focus-within:ring-teal-700 focus-within:border-teal-600">
+                             <span className="mr-3 text-gray-500 font-semibold text-xs mt-1 ">IN</span>
+
+                            <input
+                              type="tel"
+                              placeholder="Enter your phone number"
+                              className="flex-1 outline-none bg-transparent"
+                              {...field}
+                            />
+                          </div>
                         </div>
                       </FormControl>
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="text-sm text-gray-400 ">
                         Enter your 10-digit mobile number
                       </p>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                
                 <Button
                   type="submit"
-                  className="w-full bg-emerald-200 font-semibold text-emerald-900 hover:bg-emerald-300"
+                  className="w-full bg-teal-800 hover:bg-teal-700 text-white py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2"
                 >
-                  <Phone className="mr-2 h-4 w-4" />
+                  <Phone className="w-4 h-4" />
                   Sign In
                 </Button>
               </form>
             </Form>
 
-            <p className="mt-4 text-center text-[11px] text-gray-400">
-              By continuing, you agree to our <span className="underline">Terms of Service</span>{" "}
-              and <span className="underline">Privacy Policy</span>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              By continuing, you agree to our{" "}
+              <span className=" text-gray-400 cursor-text text-sm">Terms of Service</span>{" "}
+              and{" "}
+              <span className=" text-gray-400  cursor-text text-sm">Privacy Policy</span>
             </p>
           </div>
         )}
 
         {/* OTP Step */}
         {step === "otp" && (
-          <div className="space-y-5">
-            <h2 className="text-xl font-semibold text-black">Welcome</h2>
-            <p className="text-sm text-gray-500">Enter the 6-digit code sent to your phone</p>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Welcome</h2>
+              <p className="text-gray-600">Enter the 6-digit code sent to your phone</p>
+            </div>
 
-            {/* Verification message box */}
-            <div className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-gray-700">
-              <div className="mt-0.5 text-blue-600">🛡️</div>
-              <div>
-                <p className="font-semibold">Verification required</p>
-                <p>
-                  Enter the 6-digit code sent to your phone. If you don’t receive it within 30
-                  seconds, you can request a new code.
-                </p>
+            {/* Verification Info */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
+              <div className="flex items-start space-x-3">
+              <Shield className="w-6 h-5 text-gray-800" />
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Verification required</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Enter the 6-digit code sent to your phone. If you don't receive it within 30
+                    seconds, you can request a new code.
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* OTP Inputs */}
-            <div className="flex justify-center gap-2">
+            {/* OTP Input */}
+            <div className="flex justify-center space-x-2">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -180,10 +199,8 @@ export default function LoginPage() {
                   }}
                   type="text"
                   inputMode="numeric"
-                  title={`Digit ${index + 1}`}
-                  aria-label={`Digit ${index + 1}`}
                   maxLength={1}
-                  className="h-12 w-12 rounded-lg border border-gray-300 text-center text-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-12 h-12 text-center text-lg font-semibold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-800 focus:border-teal-700"
                   value={digit}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -200,39 +217,48 @@ export default function LoginPage() {
                       inputRefs.current[index - 1]?.focus();
                     }
                   }}
+                  placeholder="."
                 />
+                
               ))}
             </div>
 
-            {otpError && <p className="text-center text-sm text-red-500">{otpError}</p>}
+            {otpError && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+                {otpError}
+              </p>
+            )}
 
-            {/* Resend + Timer */}
-            <div className="flex justify-between px-1 text-sm text-gray-500">
-              <span>
-                Didn’t receive code?{" "}
+            {/* Resend and Timer */}
+            <div className="flex justify-between items-center text-sm">
+              <div>
+                <span className="font-semibold  text-gray-600">Didn't receive code? </span>
                 <button
-                  className="text-emerald-600 underline"
+                  className="font-semibold text-teal-600 hover:text-teal-700 "
                   onClick={() => {
-                    setSentOTP("654321"); // Replace with real resend logic
+                    setSentOTP("654321");
                     setTimer(300);
+                    setOtpError("");
                     alert("New OTP sent!");
                   }}
                 >
                   Resend
                 </button>
-              </span>
-              <span>{formatTime(timer)}</span>
+              </div>
+              <span className="text-gray-500 font-mono">{formatTime(timer)}</span>
             </div>
 
             <Button
-              className="w-full bg-emerald-700 text-sm font-semibold text-white hover:bg-emerald-800"
+              className="w-full bg-teal-800 hover:bg-teal-700 text-white py-3 rounded-lg font-medium text-sm"
               onClick={handleOTPSubmit}
             >
-              🛡️ Verify
+              <Shield className="w-5 h-8 text-gray-200" /> <p className=" text-gray-200 text-lg">Verify</p>
             </Button>
           </div>
         )}
       </div>
     </div>
   );
-}
+};
+
+export default Index
