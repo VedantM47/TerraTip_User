@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +15,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { auth } from "@/lib/firebaseConfig";
+import {
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  ConfirmationResult,
+} from "firebase/auth";
 
 const phoneSchema = z.object({
   phone: z
@@ -29,7 +35,8 @@ type PhoneFormData = z.infer<typeof phoneSchema>;
 const LoginForm = () => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otp, setOtp] = useState("");
-  const [sentOTP] = useState("312994"); // Simulated OTP
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const phoneForm = useForm<PhoneFormData>({
     resolver: zodResolver(phoneSchema),
@@ -38,17 +45,45 @@ const LoginForm = () => {
     },
   });
 
-  const handlePhoneSubmit = (data: PhoneFormData) => {
-    // Simulate OTP being sent
-    alert(`OTP sent to ${data.phone}: ${sentOTP}`);
-    setShowOtpInput(true);
+  useEffect(() => {
+  if (typeof window !== "undefined" && !(window as any).recaptchaVerifier) {
+    (window as any).recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: (response: any) => {
+          console.log("reCAPTCHA solved");
+        },
+        "expired-callback": () => {
+          console.warn("reCAPTCHA expired");
+        },
+      },
+    );
+     }
+}, []);
+
+  const handlePhoneSubmit = async (data: PhoneFormData) => {
+    const fullPhone = `+91${data.phone}`;
+    setPhoneNumber(fullPhone);
+
+    const appVerifier = (window as any).recaptchaVerifier;
+    console.log("appVerifier", appVerifier)
+
+    try {
+      const result = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+      console.log("REsult", result)
+      setConfirmationResult(result);
+      alert(`✅ OTP sent to ${fullPhone}`);
+      setShowOtpInput(true);
+    } catch (err: any) {
+      console.error("Error sending OTP:", err.message);
+      alert("❌ Failed to send OTP: " + err.message);
+    }
   };
 
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Entered OTP:", otp);
-    console.log("Expected OTP:", sentOTP);
-
     const trimmedOtp = otp.trim();
 
     if (trimmedOtp.length !== 6) {
@@ -56,22 +91,25 @@ const LoginForm = () => {
       return;
     }
 
-    if (trimmedOtp === sentOTP) {
-      console.log("FORM SUBMITTED ✅");
-      alert("✅ OTP Verified!");
-    } else {
-      alert("❌ Incorrect OTP. Please try again.");
+    if (!confirmationResult) {
+      alert("⚠️ OTP was not sent properly. Please try again.");
+      return;
+    }
+
+    try {
+      await confirmationResult.confirm(trimmedOtp);
+      alert("✅ OTP Verified! You're logged in.");
+    } catch (err: any) {
+      console.error("OTP verification failed:", err.message);
+      alert("❌ Invalid OTP. Please try again.");
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-8">
       <div className="w-full max-w-md rounded-lg bg-white p-6 text-center shadow-md">
-        {/* Logo and Title */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-teal-800">TerraTip</h1>
-
-          {/* SVG Logo */}
           <div className="mb-8 mt-6 flex justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -140,7 +178,6 @@ const LoginForm = () => {
             </form>
           </Form>
 
-          {/* OTP Input - Only shown after phone validation */}
           {showOtpInput && (
             <form onSubmit={handleFinalSubmit} className="space-y-6">
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-left">
@@ -183,6 +220,9 @@ const LoginForm = () => {
             <span className="cursor-text text-sm text-gray-400">Privacy Policy</span>
           </p>
         </div>
+
+        {/* 🔐 Invisible reCAPTCHA placeholder */}
+        <div id="recaptcha-container" />
       </div>
     </div>
   );
