@@ -1,0 +1,36 @@
+{
+  // Tailwind CSS IntelliSense: support for class utilities inside functions
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "cva(?:<[^>]*>)?\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]",
+      "(?:twMerge|twJoin)\\(([^\\);]*)[\\);]"
+    ]
+  ],
+
+  // Format on save globally
+  "editor.formatOnSave": true,
+
+  // Run ESLint auto-fixes on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.fixAll.eslint": true
+  },
+
+  // Ensure ESLint runs on these file types
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+  // Set Prettier as the default formatter for supported file types
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

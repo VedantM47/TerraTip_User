@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "PulkitGangwar.nextjs-snippets",
+    "usernamehw.errorlens",
+    "stivo.tailwind-fold",
+    "austenc.tailwind-docs",
+    "formulahendry.auto-rename-tag",
+    "formulahendry.auto-close-tag",
+    "naumovs.color-highlight"
+  ]
+}
