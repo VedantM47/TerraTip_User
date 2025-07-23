@@ -16,6 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { loginApi } from "@/lib/utils/api/auth";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -36,15 +38,24 @@ const LoginForm = () => {
     },
   });
 
-  const handleSubmit = (data: LoginFormData) => {
-    console.log("Login data:", data);
-    // Simulate API call here
-    const isFirstTime = true; // replace with real check
-    if (isFirstTime) {
-      router.push("/onboarding");
-    } else {
-      router.push("/dashboard");
-    }
+  const handleSubmit = async (data: LoginFormData) => {
+    await loginApi(data)
+      .then((res) => {
+        const token = res?.data?.token;
+        if (token) {
+          localStorage.setItem("token", token);
+          toast.success("Login successful");
+
+          const isFirstTime = res?.data?.isFirstTime; // adjust based on actual API
+          router.push(isFirstTime ? "/onboarding/property" : "/dashboard");
+        } else {
+          toast.error("Invalid response from server.");
+        }
+      })
+      .catch((err) => {
+        const message = err?.response?.data?.message || "Login failed. Please try again.";
+        toast.error(message);
+      });
   };
 
   return (
