@@ -42,8 +42,10 @@ const LoginForm = () => {
     await loginApi(data)
       .then((res) => {
         const token = res?.data?.token;
+        const userId = res?.data?.user?._id;
         if (token) {
           localStorage.setItem("token", token);
+          localStorage.setItem("userId", userId);
           toast.success("Login successful");
 
           const isFirstTime = res?.data?.isFirstTime; // adjust based on actual API
