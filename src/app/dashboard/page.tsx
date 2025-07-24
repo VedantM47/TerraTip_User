@@ -72,9 +72,17 @@ export default function DashboardPage() {
 
       {/* Property Section */}
       <section className="space-y-4 rounded-xl bg-white p-4 shadow-sm dark:bg-card">
-        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-xl font-semibold text-foreground sm:text-2xl">🏠 Your Properties</h2>
-          <AddPropertyModal />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <AddPropertyModal />
+            <a
+              href="/dashboard/properties"
+              className="inline-flex items-center justify-center rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700"
+            >
+              View Properties
+            </a>
+          </div>
         </div>
 
         {isLoaded && activeProperty ? (
