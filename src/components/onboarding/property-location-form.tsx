@@ -16,9 +16,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import LocationPickerMap from "@/components/location-picker-map";
 import { addProperty } from "@/lib/utils/api/property";
 
+// Schema
 const propertySchema = z.object({
   size: z.preprocess(
     (val) => Number(val),
@@ -26,11 +35,21 @@ const propertySchema = z.object({
       .number({ invalid_type_error: "Size must be a number" })
       .min(1, { message: "Size must be greater than 0" })
   ),
-  areaType: z.string().min(1, { message: "Area type is required" }),
-  landType: z.string().min(1, { message: "Land type is required" }),
+  areaType: z
+    .string()
+    .min(1, { message: "Area type is required" })
+    .refine((val) => ["RESIDENTIAL", "COMMERCIAL"].includes(val.toUpperCase()), {
+      message: "Invalid area type",
+    }),
+  landType: z
+    .string()
+    .min(1, { message: "Land type is required" })
+    .refine((val) => ["URBAN", "RURAL"].includes(val.toUpperCase()), {
+      message: "Invalid land type",
+    }),
   coordinates: z.object({
-    latitude: z.string().min(1, "Latitude required"),
-    longitude: z.string().min(1, "Longitude required"),
+    latitude: z.string().min(1, "Latitude is required"),
+    longitude: z.string().min(1, "Longitude is required"),
   }),
 });
 
@@ -46,26 +65,28 @@ const PropertyLocationForm = () => {
     defaultValues: {
       size: 100,
       areaType: "COMMERCIAL",
-      landType: "",
+      landType: "URBAN",
       coordinates: {
-        latitude: "",
-        longitude: "",
+        latitude: "0",
+        longitude: "0",
       },
     },
   });
+  console.log("📡 Live Form Values:", form.watch());
 
   const handleSubmit = async (data: PropertyFormData) => {
-    console.log("Submitting form:", data);
-
-    await addProperty(data)
-      .then(() => {
-        toast.success("Property added successfully!");
-        router.push("/dashboard");
-      })
-      .catch((err) => {
-        const msg = err?.response?.data?.message || "Failed to add property. Please try again.";
-        toast.error(msg);
+    try {
+      await addProperty({
+        ...data,
+        areaType: data.areaType.toUpperCase(),
+        landType: data.landType.toUpperCase(),
       });
+      toast.success("Property added successfully!");
+      router.push("/dashboard");
+    } catch {
+      const msg = "Failed to add property. Please try again.";
+      toast.error(msg);
+    }
   };
 
   return (
@@ -78,75 +99,12 @@ const PropertyLocationForm = () => {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(
-              (data) => {
-                handleSubmit(data);
-              },
-              (errors) => {
-                if (Object.keys(errors).length > 0) {
-                  toast.error("Please fix the highlighted errors.");
-                }
-              }
+            onSubmit={form.handleSubmit(handleSubmit, () =>
+              toast.error("Please fix the highlighted errors.")
             )}
             className="space-y-4"
           >
-            <FormField
-              control={form.control}
-              name="size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Size (sqft)</FormLabel>
-                  <FormControl>
-                    <input
-                      type="number"
-                      className="w-full rounded-md border px-3 py-2 text-sm"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="areaType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Area Type</FormLabel>
-                  <FormControl>
-                    <select className="w-full rounded-md border px-3 py-2 text-sm" {...field}>
-                      <option value="COMMERCIAL">Commercial</option>
-                      <option value="RESIDENTIAL">Residential</option>
-                      <option value="AGRICULTURAL">Agricultural</option>
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="landType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Land Type</FormLabel>
-                  <FormControl>
-                    <input
-                      type="text"
-                      className="w-full rounded-md border px-3 py-2 text-sm"
-                      placeholder="e.g., Open Plot"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+            {/* 📍 Location Picker */}
             <FormField
               control={form.control}
               name="coordinates"
@@ -173,6 +131,79 @@ const PropertyLocationForm = () => {
                       )}
                     </div>
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* 📐 Property Size */}
+            <FormField
+              control={form.control}
+              name="size"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Property Size (sq. ft.)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={1}
+                      placeholder="Enter size"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* 🏙️ Area Type */}
+            <FormField
+              control={form.control}
+              name="areaType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Area Type</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val.toUpperCase())}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="border border-input bg-white text-black">
+                        <SelectValue placeholder="Select area type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white text-black">
+                      <SelectItem value="RESIDENTIAL">Residential</SelectItem>
+                      <SelectItem value="COMMERCIAL">Commercial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* 🌍 Land Type */}
+            <FormField
+              control={form.control}
+              name="landType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Land Type</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val.toUpperCase())}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="border border-input bg-white text-black">
+                        <SelectValue placeholder="Select land type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white text-black">
+                      <SelectItem value="URBAN">Urban</SelectItem>
+                      <SelectItem value="RURAL">Rural</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

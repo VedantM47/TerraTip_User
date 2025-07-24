@@ -9,32 +9,94 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import LocationPickerMap from "@/components/location-picker-map";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { addProperty } from "@/lib/utils/api/property";
 
-import { UploadCloud, Eye } from "lucide-react";
-import { useRef, useState } from "react";
+// Schema
+const propertySchema = z.object({
+  size: z.preprocess(
+    (val) => Number(val),
+    z.number({ invalid_type_error: "Size must be a number" }).min(1, {
+      message: "Size must be greater than 0",
+    })
+  ),
+  areaType: z
+    .string()
+    .min(1, { message: "Area type is required" })
+    .refine((val) => ["URBAN", "RURAL"].includes(val.toUpperCase()), {
+      message: "Invalid area type",
+    }),
+  landType: z
+    .string()
+    .min(1, { message: "Land type is required" })
+    .refine((val) => ["RESIDENTIAL", "COMMERCIAL"].includes(val.toUpperCase()), {
+      message: "Invalid land type",
+    }),
+  coordinates: z.object({
+    latitude: z.string().min(1, "Latitude is required"),
+    longitude: z.string().min(1, "Longitude is required"),
+  }),
+});
 
-interface FileWithPreview extends File {
-  previewUrl?: string;
-}
+type PropertyFormData = z.infer<typeof propertySchema>;
 
 export default function AddPropertyModal() {
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
-  const [address, setAddress] = useState("");
   const [location, setLocation] = useState("");
+  const [latLng, setLatLng] = useState({ lat: "", lng: "" });
+  const [open, setOpen] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(e.target.files || []);
-    setFiles((prev) => [...prev, ...newFiles]);
+  const form = useForm<PropertyFormData>({
+    resolver: zodResolver(propertySchema),
+    defaultValues: {
+      size: 1000,
+      areaType: "URBAN",
+      landType: "RESIDENTIAL",
+      coordinates: {
+        latitude: "0",
+        longitude: "0",
+      },
+    },
+  });
+  console.log("📡 Live Form Values:", form.watch());
+
+  const handleSubmit = async (data: PropertyFormData) => {
+    try {
+      await addProperty({
+        ...data,
+        areaType: data.areaType.toUpperCase(),
+        landType: data.landType.toUpperCase(),
+      });
+      toast.success("Property added successfully!");
+      // form.reset();
+      setOpen(false);
+    } catch {
+      toast.error("Failed to add property.");
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-brand hover:bg-brand/90">Add Property</Button>
       </DialogTrigger>
@@ -45,77 +107,132 @@ export default function AddPropertyModal() {
             Add Property Details
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Upload property documents and location.
+            Set property location and details.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <LocationPickerMap
-            location={location}
-            setLocation={setLocation}
-            onLocationChange={(lat, lng, addr) => {
-              setCoordinates({ lat, lng });
-              setAddress(addr);
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit, (err) =>
+              toast.error(`Please fix the highlighted errors. ${JSON.stringify(err)}`)
+            )}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault(); // 🚫 Prevent form submit on Enter
+              }
             }}
-          />
-
-          <div className="space-y-2">
-            <Label>Upload Documents</Label>
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-muted p-4 hover:bg-muted/40"
-            >
-              <UploadCloud className="mr-2 h-5 w-5" />
-              <span className="text-sm text-muted-foreground">
-                Click to upload documents (PDF, PNG, JPG)
-              </span>
-              <Input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.png,.jpg"
-                multiple
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </div>
-          </div>
-
-          {files.length > 0 && (
-            <div className="space-y-2">
-              <Label>Uploaded Files</Label>
-              <ul className="max-h-48 space-y-2 overflow-auto rounded-md border p-2">
-                {files.map((file, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between rounded-md bg-muted px-3 py-2 text-sm"
-                  >
-                    <span className="w-[75%] truncate">{file.name}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-brand"
-                      onClick={() => alert("Preview in secure viewer")}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <Button
-            className="mt-4 w-full bg-brand hover:bg-brand/90"
-            onClick={() => {
-              console.log("📨 Submitting Property:");
-              console.log("📍 Coordinates:", coordinates);
-              console.log("🏡 Address:", address);
-              console.log("📝 Files:", files);
-            }}
+            className="space-y-4"
           >
-            Submit Property
-          </Button>
-        </div>
+            {/* 📍 Location Picker */}
+            <FormField
+              control={form.control}
+              name="coordinates"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pick Location</FormLabel>
+                  <FormControl>
+                    <div className="rounded-md border p-2">
+                      <LocationPickerMap
+                        location={location}
+                        setLocation={setLocation}
+                        onLocationChange={(lat, lng) => {
+                          setLatLng({ lat: String(lat), lng: String(lng) });
+                          field.onChange({
+                            latitude: String(lat),
+                            longitude: String(lng),
+                          });
+                        }}
+                      />
+                      {latLng.lat && (
+                        <p className="mt-2 text-xs text-gray-500">
+                          Lat: {latLng.lat}, Lng: {latLng.lng}
+                        </p>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* 📐 Size */}
+            <FormField
+              control={form.control}
+              name="size"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Property Size (sq. ft.)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={1}
+                      placeholder="Enter size"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* 🏙️ Area Type */}
+            <FormField
+              control={form.control}
+              name="areaType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Area Type</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val.toUpperCase())}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="border border-input bg-white text-black">
+                        <SelectValue placeholder="Select area type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white text-black">
+                      <SelectItem value="URBAN">Urban</SelectItem>
+                      <SelectItem value="RURAL">Rural</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* 🌍 Land Type */}
+            <FormField
+              control={form.control}
+              name="landType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Land Type</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(val) => field.onChange(val.toUpperCase())}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="border border-input bg-white text-black">
+                        <SelectValue placeholder="Select land type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white text-black">
+                      <SelectItem value="RESIDENTIAL">Residential</SelectItem>
+                      <SelectItem value="COMMERCIAL">Commercial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full bg-brand hover:bg-brand/90">
+              Submit Property
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

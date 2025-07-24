@@ -41,11 +41,12 @@ const LoginForm = () => {
   const handleSubmit = async (data: LoginFormData) => {
     await loginApi(data)
       .then((res) => {
-        const token = res?.data?.token;
-        const userId = res?.data?.user?._id;
+        const { token, user } = res?.data;
+        const userId = user._id;
         if (token) {
           localStorage.setItem("token", token);
           localStorage.setItem("userId", userId);
+          localStorage.setItem("user", user);
           toast.success("Login successful");
 
           const isFirstTime = res?.data?.isFirstTime; // adjust based on actual API
