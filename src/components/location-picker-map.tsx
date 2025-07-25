@@ -10,7 +10,7 @@ const mapContainerStyle = {
 };
 
 const defaultCenter = {
-  lat: 28.6139, // New Delhi
+  lat: 28.6139,
   lng: 77.209,
 };
 
@@ -28,10 +28,17 @@ export default function LocationPickerMap({ onLocationChange, location, setLocat
 
   const [center, setCenter] = useState(defaultCenter);
   const [markerPosition, setMarkerPosition] = useState(defaultCenter);
+
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
   const geocoder = useRef<google.maps.Geocoder | null>(null);
+
+  // 🔧 Pointer-event unlock workaround
+  useEffect(() => {
+    setTimeout(() => {
+      document.body.style.pointerEvents = "";
+    }, 0);
+  }, []);
 
   useEffect(() => {
     if (!geocoder.current && window.google) {
@@ -42,7 +49,6 @@ export default function LocationPickerMap({ onLocationChange, location, setLocat
   const reverseGeocode = useCallback(
     (lat: number, lng: number) => {
       if (!geocoder.current) return;
-
       geocoder.current.geocode({ location: { lat, lng } }, (results, status) => {
         if (status === "OK" && results && results[0]) {
           const address = results[0].formatted_address;
@@ -58,7 +64,6 @@ export default function LocationPickerMap({ onLocationChange, location, setLocat
     (e: google.maps.MapMouseEvent) => {
       const lat = e.latLng?.lat();
       const lng = e.latLng?.lng();
-
       if (lat && lng) {
         setMarkerPosition({ lat, lng });
         setCenter({ lat, lng });
@@ -75,7 +80,6 @@ export default function LocationPickerMap({ onLocationChange, location, setLocat
     if (place.geometry && place.geometry.location) {
       const lat = place.geometry.location.lat();
       const lng = place.geometry.location.lng();
-
       setMarkerPosition({ lat, lng });
       setCenter({ lat, lng });
       reverseGeocode(lat, lng);
@@ -85,20 +89,22 @@ export default function LocationPickerMap({ onLocationChange, location, setLocat
   if (!isLoaded) return <div>Loading Map...</div>;
 
   return (
-    <div className="space-y-2">
-      <Autocomplete
-        onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
-        onPlaceChanged={onPlaceChanged}
-      >
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder="Search for a location"
-          className="w-full rounded-md border p-2"
-          value={location}
-          onChange={(e) => setLocation?.(e.target.value)}
-        />
-      </Autocomplete>
+    <div className="relative space-y-2">
+      <div className="absolute left-2 top-2 z-[999] w-[calc(100%-1rem)]">
+        <Autocomplete
+          onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+          onPlaceChanged={onPlaceChanged}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search for a location"
+            className="w-full rounded-md border bg-white p-2 shadow-md"
+            value={location}
+            onChange={(e) => setLocation?.(e.target.value)}
+          />
+        </Autocomplete>
+      </div>
 
       <GoogleMap
         mapContainerStyle={mapContainerStyle}

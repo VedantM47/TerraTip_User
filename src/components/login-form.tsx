@@ -46,7 +46,7 @@ const LoginForm = () => {
         if (token) {
           localStorage.setItem("token", token);
           localStorage.setItem("userId", userId);
-          localStorage.setItem("user", user);
+          localStorage.setItem("user", JSON.stringify(user));
           toast.success("Login successful");
 
           const isFirstTime = res?.data?.isFirstTime; // adjust based on actual API

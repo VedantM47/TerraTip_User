@@ -101,7 +101,18 @@ export default function AddPropertyModal() {
         <Button className="bg-brand hover:bg-brand/90">Add Property</Button>
       </DialogTrigger>
 
-      <DialogContent className="rounded-lg shadow-xl sm:max-w-lg">
+      <DialogContent
+        className="rounded-lg shadow-xl sm:max-w-lg"
+        onInteractOutside={(e) => {
+          const path = e.composedPath();
+          for (const el of path) {
+            if (el instanceof HTMLElement && el.classList.contains("pac-container")) {
+              e.preventDefault();
+              break;
+            }
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-brand">
             Add Property Details
@@ -113,8 +124,8 @@ export default function AddPropertyModal() {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleSubmit, (err) =>
-              toast.error(`Please fix the highlighted errors. ${JSON.stringify(err)}`)
+            onSubmit={form.handleSubmit(handleSubmit, () =>
+              toast.error("Please fix the highlighted errors.")
             )}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
