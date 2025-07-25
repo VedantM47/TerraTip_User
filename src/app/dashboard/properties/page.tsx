@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { getAllProperties } from "@/lib/utils/api/property";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import ChartModal from "@/components/dashboard/chart-modal";
 
 const libraries: "places"[] = ["places"];
@@ -51,16 +49,6 @@ export default function PropertyListPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="mb-4 flex items-center gap-2">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm font-medium text-green-700 hover:underline"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Dashboard
-        </Link>
-      </div>
-
       <h2 className="mb-6 text-center text-3xl font-bold text-teal-700">Property Listings</h2>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

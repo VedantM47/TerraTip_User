@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import {
@@ -66,26 +66,15 @@ const LoginForm = () => {
       <div className="w-full max-w-md rounded-2xl bg-white px-6 py-8 shadow-xl">
         {/* Logo and Title */}
         <div className="mb-8 text-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="64"
-            height="64"
-            viewBox="-0.5 -0.5 16 16"
-            fill="none"
-            stroke="#2e6e5e"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          <Image
+            src="/logo.svg" // or logo.png
+            alt="TerraTip Logo"
+            width={64}
+            height={64}
             className="mx-auto mb-4"
-          >
-            <desc>Land Plot Icon - TerraTip Logo</desc>
-            <path d="m7.5 5 3.75 -1.875 -3.75 -1.875v6.25" strokeWidth="1" />
-            <path
-              d="m5 7.49375 -3.4375 1.9625a0.625 0.625 0 0 0 0 1.0875l5.3125 3.0375a1.25 1.25 0 0 0 1.25 0l5.3125 -3.0375a0.625 0.625 0 0 0 0 -1.0875L10 7.5"
-              strokeWidth="1"
-            />
-            <path d="m4.05625 8.03125 6.8875 3.9375" strokeWidth="1" />
-            <path d="M10.94375 8.03125 4.0625 11.96875" strokeWidth="1" />
-          </svg>
+            priority
+          />
+
           <h1 className="text-3xl font-semibold text-teal-800">TerraTip</h1>
           <p className="mt-2 text-sm text-gray-500">Login with your email and password</p>
         </div>
