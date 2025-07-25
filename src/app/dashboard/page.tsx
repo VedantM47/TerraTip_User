@@ -115,7 +115,7 @@ export default function DashboardPage() {
       )}
 
       {/* Growth Section */}
-      <section className="space-y-6 rounded-xl bg-white p-6 shadow-sm dark:bg-card">
+      <section className="space-y-6 rounded-xl bg-white p-4 shadow-sm dark:bg-card">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
