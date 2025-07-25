@@ -29,6 +29,7 @@ export default function DashboardPage() {
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProperties() {
@@ -41,6 +42,15 @@ export default function DashboardPage() {
     }
 
     fetchProperties();
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        setUserName(parsed.name || parsed.email || "there");
+      } catch (err) {
+        console.error("Error parsing user from localStorage:", err);
+      }
+    }
   }, []);
 
   const activeProperty = properties[activeIndex];
@@ -62,6 +72,14 @@ export default function DashboardPage() {
 
   return (
     <main className="mx-auto max-h-[700px] max-w-3xl space-y-8 overflow-hidden overflow-y-auto p-4 sm:p-6 md:p-8">
+      {userName && (
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold text-foreground">Welcome back, {userName}! 👋</h1>
+          <p className="text-gray-500 text-muted-foreground">
+            {`Here's what's happening with your properties today`}
+          </p>
+        </div>
+      )}
       {/* Growth Section */}
       <section className="rounded-xl bg-white p-4 shadow-sm dark:bg-card">
         <h2 className="mb-3 text-xl font-semibold text-foreground sm:text-2xl">
@@ -78,7 +96,7 @@ export default function DashboardPage() {
             <AddPropertyModal />
             <a
               href="/dashboard/properties"
-              className="inline-flex items-center justify-center rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700"
+              className="inline-flex items-center justify-center rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700"
             >
               View Properties
             </a>

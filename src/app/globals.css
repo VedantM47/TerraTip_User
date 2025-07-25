@@ -72,3 +72,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+body {
+  font-family: "font-sans", sans-serif; /* Or whatever font you want */
+}

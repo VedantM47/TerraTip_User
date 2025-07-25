@@ -10,6 +10,10 @@ const libraries: "places"[] = ["places"];
 const mapContainerStyle = {
   width: "100%",
   height: "200px",
+  borderRadius: "12px", // rounded corners
+  border: "1px solid #e5e7eb", // light gray border (Tailwind: border-gray-200)
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)", // soft shadow
+  overflow: "hidden", // clips the map inside rounded corners
 };
 
 interface Property {
@@ -57,7 +61,7 @@ export default function PropertyListPage() {
             key={property._id}
             className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
           >
-            <div className="p-4">
+            <div className="p-4 font-normal">
               <p className="text-sm text-gray-500">
                 <strong className="text-gray-800">Size:</strong> {property.size} sqft
               </p>
@@ -67,17 +71,9 @@ export default function PropertyListPage() {
               <p className="text-sm text-gray-500">
                 <strong className="text-gray-800">Land Type:</strong> {property.landType}
               </p>
-              <p className="text-sm text-gray-500">
-                <strong className="text-gray-800">Latitude:</strong>{" "}
-                {property.coordinates.latitude.toFixed(5)}
-              </p>
-              <p className="text-sm text-gray-500">
-                <strong className="text-gray-800">Longitude:</strong>{" "}
-                {property.coordinates.longitude.toFixed(5)}
-              </p>
             </div>
 
-            <div className="w-full">
+            <div className="w-full rounded-lg p-2">
               <GoogleMap
                 mapContainerStyle={mapContainerStyle}
                 center={{

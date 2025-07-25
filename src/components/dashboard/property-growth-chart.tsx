@@ -13,7 +13,7 @@ import {
   Filler,
 } from "chart.js";
 import { getPropertyPortfolio } from "@/lib/utils/api/property";
-import type { ScriptableContext, TooltipItem } from "chart.js";
+import type { ScriptableContext, TooltipItem, ChartOptions } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
@@ -63,11 +63,12 @@ export default function PropertyGrowthChart() {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
+        onClick: undefined,
         display: true,
         position: "top" as const,
         labels: {
@@ -76,6 +77,7 @@ export default function PropertyGrowthChart() {
             size: 14,
             family: "Inter, sans-serif",
           },
+          boxWidth: 0,
         },
       },
       tooltip: {
@@ -92,7 +94,7 @@ export default function PropertyGrowthChart() {
         },
         grid: {
           color: "rgba(148, 163, 184, 0.1)",
-          drawTicks: false,
+          drawTicks: true,
         },
         border: {
           display: false,

@@ -98,7 +98,7 @@ export default function AddPropertyModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-brand hover:bg-brand/90">Add Property</Button>
+        <Button className="bg-brand text-white hover:bg-brand/90">Add Property</Button>
       </DialogTrigger>
 
       <DialogContent
@@ -142,7 +142,7 @@ export default function AddPropertyModal() {
                 <FormItem>
                   <FormLabel>Pick Location</FormLabel>
                   <FormControl>
-                    <div className="rounded-md border p-2">
+                    <div>
                       <LocationPickerMap
                         location={location}
                         setLocation={setLocation}
@@ -241,7 +241,7 @@ export default function AddPropertyModal() {
               />
             </div>
 
-            <Button type="submit" className="w-full bg-brand hover:bg-brand/90">
+            <Button type="submit" className="w-full bg-brand text-white hover:bg-brand/90">
               Submit Property
             </Button>
           </form>

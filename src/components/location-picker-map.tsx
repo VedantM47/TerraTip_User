@@ -6,7 +6,11 @@ import { GoogleMap, Marker, useLoadScript, Autocomplete } from "@react-google-ma
 const libraries: "places"[] = ["places"];
 const mapContainerStyle = {
   width: "100%",
-  height: "300px",
+  height: "200px",
+  borderRadius: "12px", // rounded corners
+  border: "1px solid #e5e7eb", // light gray border (Tailwind: border-gray-200)
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)", // soft shadow
+  overflow: "hidden", // clips the map inside rounded corners
 };
 
 const defaultCenter = {
