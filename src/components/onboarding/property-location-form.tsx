@@ -72,7 +72,6 @@ const PropertyLocationForm = () => {
       },
     },
   });
-  console.log("📡 Live Form Values:", form.watch());
 
   const handleSubmit = async (data: PropertyFormData) => {
     try {

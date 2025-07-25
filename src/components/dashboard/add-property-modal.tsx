@@ -78,7 +78,6 @@ export default function AddPropertyModal() {
       },
     },
   });
-  console.log("📡 Live Form Values:", form.watch());
 
   const handleSubmit = async (data: PropertyFormData) => {
     try {
