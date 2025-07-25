@@ -61,7 +61,7 @@ const propertySchema = z.object({
 
 type PropertyFormData = z.infer<typeof propertySchema>;
 
-export default function AddPropertyModal() {
+export default function AddPropertyModal({ onPropertyAdded }: { onPropertyAdded: () => void }) {
   const [location, setLocation] = useState("");
   const [latLng, setLatLng] = useState({ lat: "", lng: "" });
   const [open, setOpen] = useState(false);
@@ -88,6 +88,7 @@ export default function AddPropertyModal() {
       });
       toast.success("Property added successfully!");
       // form.reset();
+      onPropertyAdded?.();
       setOpen(false);
     } catch {
       toast.error("Failed to add property.");

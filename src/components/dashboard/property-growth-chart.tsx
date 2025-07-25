@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,34 +10,27 @@ import {
   Tooltip,
   Legend,
   Filler,
+  type ScriptableContext,
+  type TooltipItem,
+  type ChartOptions,
 } from "chart.js";
-import { getPropertyPortfolio } from "@/lib/utils/api/property";
-import type { ScriptableContext, TooltipItem, ChartOptions } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
-export default function PropertyGrowthChart() {
-  const [labels, setLabels] = useState<string[]>([]);
-  const [prices, setPrices] = useState<number[]>([]);
+interface PriceTrendEntry {
+  year: string;
+  price: number;
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await getPropertyPortfolio();
-        const priceTrend = response.data?.portfolio?.priceTrend || [];
+export default function PropertyGrowthChart({
+  portfolio,
+}: {
+  portfolio: { priceTrend: PriceTrendEntry[] } | null;
+}) {
+  if (!portfolio) return <div className="text-muted-foreground">Loading chart...</div>;
 
-        // Sort by year just in case
-        const sortedTrend = [...priceTrend].sort((a, b) => Number(a.year) - Number(b.year));
-
-        setLabels(sortedTrend.map((entry) => entry.year));
-        setPrices(sortedTrend.map((entry) => Math.round(entry.price / 100000))); // convert to ₹ Lakhs
-      } catch (error) {
-        console.error("Failed to load portfolio data:", error);
-      }
-    }
-
-    fetchData();
-  }, []);
+  const labels = portfolio.priceTrend.map((entry) => entry.year);
+  const prices = portfolio.priceTrend.map((entry) => Math.round(entry.price / 100000)); // in Lakhs
 
   const data = {
     labels,
@@ -46,7 +38,7 @@ export default function PropertyGrowthChart() {
       {
         label: "Value (₹ Lakhs)",
         data: prices,
-        borderColor: "#00FFD1", // Neon teal
+        borderColor: "#00FFD1",
         backgroundColor: (ctx: ScriptableContext<"line">) => {
           const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 400);
           gradient.addColorStop(0, "rgba(0,255,209,0.25)");
@@ -57,7 +49,7 @@ export default function PropertyGrowthChart() {
         tension: 0.4,
         pointRadius: 4,
         pointBackgroundColor: "#00FFD1",
-        pointBorderColor: "#0F172A", // dark slate
+        pointBorderColor: "#0F172A",
         pointHoverRadius: 6,
       },
     ],
@@ -68,9 +60,8 @@ export default function PropertyGrowthChart() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        onClick: undefined,
         display: true,
-        position: "top" as const,
+        position: "top",
         labels: {
           color: "#CBD5E1",
           font: {
@@ -88,16 +79,11 @@ export default function PropertyGrowthChart() {
     },
     scales: {
       x: {
-        offset: false,
         ticks: {
           color: "#94A3B8",
         },
         grid: {
           color: "rgba(148, 163, 184, 0.1)",
-          drawTicks: true,
-        },
-        border: {
-          display: false,
         },
       },
       y: {
@@ -112,8 +98,7 @@ export default function PropertyGrowthChart() {
   };
 
   return (
-    <div className="h-72 w-full rounded-xl bg-[#0F172A] p-10 shadow-lg ring-1 ring-slate-700/20">
-      <h3 className="text-lg font-semibold text-slate-200">Portfolio Growth</h3>
+    <div className="h-72 w-full rounded-xl bg-[#0F172A] p-6 shadow-lg ring-1 ring-slate-700/20">
       <Line data={data} options={options} />
     </div>
   );
