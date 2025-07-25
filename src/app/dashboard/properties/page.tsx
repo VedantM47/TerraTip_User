@@ -48,10 +48,10 @@ export default function PropertyListPage() {
   if (!isLoaded) return <div className="py-10 text-center">Loading Map...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h2 className="mb-6 text-center text-3xl font-bold text-teal-700">Property Listings</h2>
+    <div className="bg-gray-100">
+      <h2 className="mb-4 text-center text-3xl font-bold text-teal-700">Property Listings</h2>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="w-100 grid max-h-[600px] grid-cols-1 gap-6 overflow-hidden overflow-y-auto md:grid-cols-2 lg:grid-cols-3">
         {properties.map((property) => (
           <div
             key={property._id}

@@ -61,7 +61,7 @@ export default function DashboardPage() {
     : { lat: 20.5937, lng: 78.9629 };
 
   return (
-    <main className="mx-auto max-w-3xl space-y-8 p-4 sm:p-6 md:p-8">
+    <main className="mx-auto max-h-[700px] max-w-3xl space-y-8 overflow-hidden overflow-y-auto p-4 sm:p-6 md:p-8">
       {/* Growth Section */}
       <section className="rounded-xl bg-white p-4 shadow-sm dark:bg-card">
         <h2 className="mb-3 text-xl font-semibold text-foreground sm:text-2xl">

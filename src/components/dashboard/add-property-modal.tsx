@@ -102,7 +102,7 @@ export default function AddPropertyModal() {
       </DialogTrigger>
 
       <DialogContent
-        className="rounded-lg shadow-xl sm:max-w-lg"
+        className="w-96 rounded-lg shadow-xl sm:max-w-lg"
         onInteractOutside={(e) => {
           const path = e.composedPath();
           for (const el of path) {
@@ -165,79 +165,81 @@ export default function AddPropertyModal() {
                 </FormItem>
               )}
             />
-
-            {/* 📐 Size */}
-            <FormField
-              control={form.control}
-              name="size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Property Size (sq. ft.)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={1}
-                      placeholder="Enter size"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* 🏙️ Area Type */}
-            <FormField
-              control={form.control}
-              name="areaType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Area Type</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={(val) => field.onChange(val.toUpperCase())}
-                  >
+            <div className="flex justify-between">
+              {/* 📐 Size */}
+              <FormField
+                control={form.control}
+                name="size"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Size (sq. ft.)</FormLabel>
                     <FormControl>
-                      <SelectTrigger className="border border-input bg-white text-black">
-                        <SelectValue placeholder="Select area type" />
-                      </SelectTrigger>
+                      <Input
+                        className="w-20"
+                        type="number"
+                        min={1}
+                        placeholder="Enter size"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
                     </FormControl>
-                    <SelectContent className="bg-white text-black">
-                      <SelectItem value="URBAN">Urban</SelectItem>
-                      <SelectItem value="RURAL">Rural</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* 🌍 Land Type */}
-            <FormField
-              control={form.control}
-              name="landType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Land Type</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={(val) => field.onChange(val.toUpperCase())}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border border-input bg-white text-black">
-                        <SelectValue placeholder="Select land type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white text-black">
-                      <SelectItem value="RESIDENTIAL">Residential</SelectItem>
-                      <SelectItem value="COMMERCIAL">Commercial</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* 🏙️ Area Type */}
+              <FormField
+                control={form.control}
+                name="areaType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Area Type</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(val) => field.onChange(val.toUpperCase())}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border border-input bg-white text-black">
+                          <SelectValue placeholder="Select area type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white text-black">
+                        <SelectItem value="URBAN">Urban</SelectItem>
+                        <SelectItem value="RURAL">Rural</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* 🌍 Land Type */}
+              <FormField
+                control={form.control}
+                name="landType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Land Type</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(val) => field.onChange(val.toUpperCase())}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border border-input bg-white text-black">
+                          <SelectValue placeholder="Select land type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white text-black">
+                        <SelectItem value="RESIDENTIAL">Residential</SelectItem>
+                        <SelectItem value="COMMERCIAL">Commercial</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <Button type="submit" className="w-full bg-brand hover:bg-brand/90">
               Submit Property
