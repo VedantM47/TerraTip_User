@@ -121,15 +121,14 @@ export default function DashboardPage() {
             <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
               📈 Property Value Growth
             </h2>
-            <p className="text-sm text-muted-foreground">
-              {`Based on your property's estimated market trends`}
-            </p>
           </div>
           {portfolio && (
             <div>
-              <p className="text-sm text-muted-foreground">Total Value</p>
               <h3 className="text-xl font-bold text-foreground">
-                ₹{(currentValue / 100000).toFixed(2)} Lakhs
+                ₹
+                {currentValue >= 1_00_00_000
+                  ? `${(currentValue / 1_00_00_000).toFixed(2)} Crores`
+                  : `${(currentValue / 1_00_000).toFixed(2)} Lakhs`}
               </h3>
               <p className={`text-sm ${percentage >= 0 ? "text-green-500" : "text-red-500"}`}>
                 {percentage >= 0 ? "+" : ""}

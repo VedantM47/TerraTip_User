@@ -30,13 +30,21 @@ export default function PropertyGrowthChart({
   if (!portfolio) return <div className="text-muted-foreground">Loading chart...</div>;
 
   const labels = portfolio.priceTrend.map((entry) => entry.year);
-  const prices = portfolio.priceTrend.map((entry) => Math.round(entry.price / 100000)); // in Lakhs
+  const prices = portfolio.priceTrend.map((entry) => entry.price);
+
+  const formatCurrency = (value: number) => {
+    if (value >= 1_00_00_000) {
+      return `₹${(value / 1_00_00_000).toFixed(1)} Cr`;
+    } else {
+      return `₹${(value / 1_00_000).toFixed(2)} L`;
+    }
+  };
 
   const data = {
     labels,
     datasets: [
       {
-        label: "Value (₹ Lakhs)",
+        label: "Value (₹)",
         data: prices,
         borderColor: "#00FFD1",
         backgroundColor: (ctx: ScriptableContext<"line">) => {
@@ -73,7 +81,7 @@ export default function PropertyGrowthChart({
       },
       tooltip: {
         callbacks: {
-          label: (context: TooltipItem<"line">) => `₹${context.raw} Lakhs`,
+          label: (context: TooltipItem<"line">) => formatCurrency(Number(context.raw)),
         },
       },
     },
@@ -89,6 +97,10 @@ export default function PropertyGrowthChart({
       y: {
         ticks: {
           color: "#94A3B8",
+          callback: function (value: string | number) {
+            const num = typeof value === "string" ? parseFloat(value) : value;
+            return formatCurrency(num);
+          },
         },
         grid: {
           color: "rgba(148, 163, 184, 0.1)",
@@ -98,7 +110,7 @@ export default function PropertyGrowthChart({
   };
 
   return (
-    <div className="w-full rounded-xl bg-[#0F172A] shadow-lg ring-1 ring-slate-700/20">
+    <div className="min-h-60 w-full rounded-xl bg-[#0F172A] p-2 shadow-lg ring-1 ring-slate-700/20">
       <Line data={data} options={options} />
     </div>
   );
