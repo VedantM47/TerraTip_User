@@ -86,10 +86,10 @@ export default function PropertyListPage() {
 
   return (
     <div>
-      <h2 className="mb-6 text-center text-3xl font-bold">My Properties</h2>
+      <h2 className="mb-2 px-2 text-left text-3xl font-bold">My Properties</h2>
 
       {/* Summary Paragraph */}
-      <p className="mx-auto mb-8 max-w-2xl text-center text-gray-700">
+      <p className="mx-auto mb-8 max-w-2xl px-2 text-left text-gray-700">
         Your portfolio is currently worth{" "}
         <span className="font-bold text-teal-700">{formatINRCurrency(totalValue)}</span>, covers a
         total of <span className="font-bold text-teal-700">{totalArea.toLocaleString()} sqft</span>
