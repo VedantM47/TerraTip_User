@@ -54,7 +54,7 @@ export default function ChartModal({ open, onOpenChange, property }: ChartModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-md rounded-xl bg-slate-50 p-4 text-slate-800 shadow-xl sm:max-w-2xl sm:p-6">
+      <DialogContent className="max-w-md rounded-xl bg-slate-50 p-4 text-slate-800 shadow-xl sm:max-w-2xl sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-slate-900 sm:text-2xl">
             📈 Portfolio Growth
@@ -122,7 +122,7 @@ export default function ChartModal({ open, onOpenChange, property }: ChartModalP
 
             {/* Chart */}
             {trendArray && trendArray.length > 1 ? (
-              <div className="overflow-hidden rounded-xl bg-slate-900 p-3 sm:p-4">
+              <div className="rounded-xl bg-slate-900 p-3 sm:p-4">
                 <PropertyGrowthChart portfolio={{ priceTrend: trendArray }} />
               </div>
             ) : (

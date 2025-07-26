@@ -98,7 +98,7 @@ export default function PropertyGrowthChart({
   };
 
   return (
-    <div className="h-72 w-full rounded-xl bg-[#0F172A] p-6 shadow-lg ring-1 ring-slate-700/20">
+    <div className="w-full rounded-xl bg-[#0F172A] shadow-lg ring-1 ring-slate-700/20">
       <Line data={data} options={options} />
     </div>
   );
