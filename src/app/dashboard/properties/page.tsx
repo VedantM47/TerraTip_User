@@ -35,6 +35,7 @@ export default function PropertyListPage() {
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [openModal, setOpenModal] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -98,7 +99,10 @@ export default function PropertyListPage() {
             <div className="p-4">
               <button
                 className="w-full rounded-md bg-teal-700 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-teal-600"
-                onClick={() => setOpenModal(true)}
+                onClick={() => {
+                  setSelectedProperty(property);
+                  setOpenModal(true);
+                }}
               >
                 View Details
               </button>
@@ -108,7 +112,14 @@ export default function PropertyListPage() {
       </div>
 
       {/* Shared Modal */}
-      <ChartModal open={openModal} onOpenChange={setOpenModal} />
+      <ChartModal
+        open={openModal}
+        onOpenChange={(open) => {
+          setOpenModal(open);
+          if (!open) setSelectedProperty(null);
+        }}
+        property={selectedProperty}
+      />
     </div>
   );
 }
