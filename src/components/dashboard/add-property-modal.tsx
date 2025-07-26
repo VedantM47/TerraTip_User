@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -117,9 +116,6 @@ export default function AddPropertyModal({ onPropertyAdded }: { onPropertyAdded:
           <DialogTitle className="text-xl font-semibold text-brand">
             Add Property Details
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            Set property location and details.
-          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -140,7 +136,6 @@ export default function AddPropertyModal({ onPropertyAdded }: { onPropertyAdded:
               name="coordinates"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pick Location</FormLabel>
                   <FormControl>
                     <div>
                       <LocationPickerMap
